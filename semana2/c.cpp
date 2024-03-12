@@ -14,9 +14,12 @@ int main() {
     sort(begin(id), end(id), [&](int i, int j){
         return v[i] < v[j];
             });
-    for (auto i : v) cout << i << " ";
-    cout << endl;
-    for (auto i : id) cout << i << " ";
-    cout << endl;
+
+    ll sum = 1;
+    for (ll i = 1; i < n; i++)
+        if (id[i] < id[i-1])
+            sum++;
+
+    cout << sum << endl;
     return 0;
 }
