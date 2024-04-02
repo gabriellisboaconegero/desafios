@@ -16,14 +16,16 @@ int main(){
         return a.second == b.second ? a.first > b.first : a.second < b.second;
     });
 
-    ll sum = 0;
-    ll prev = -1;
-    for (auto i: v){
-        if (prev != i.second)
-            sum += i.first;
-        prev = i.second;
+    multiset<ll> m;
+    for (auto p: v){
+        m.insert(p.first);
+        if (m.size() > p.second)
+            m.erase(m.begin());
     }
 
+    ll sum = 0;
+    for (auto i: m)
+        sum += i;
     cout << sum << endl;
 
 	return 0;
