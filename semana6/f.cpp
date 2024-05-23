@@ -37,8 +37,8 @@ int main() {
     /* 9 8 7 - 5 4 3 2 */
 
     /* 0 1 2 3 4 */
-    /* 1 2 3 3 4 */
-    /* 9 8 7 - 5 */
+    /* 1 2 3 4 4 */
+    /* 3 5 5 4 - */
     vector<ll> v(n);
     for (ll i = 0; i < n; i++){
         cin >> v[i];
@@ -59,8 +59,6 @@ int main() {
                 hv = lower_b(hft);
                 break;
             case 'd':
-                if (hft>=get(n))
-                    hft--;
                 add(hv+1, -1);
                 add(n+1, 1);
                 hv = lower_b(hft);
