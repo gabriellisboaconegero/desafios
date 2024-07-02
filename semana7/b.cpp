@@ -1,16 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define ll long long
-#define N 1e7+15
-
-ll big[N] = {1, 1};
 
 int main() {
     ll t;
-    for (ll i = 1; i * i < N; i++)
-        if (big[i] == 1)
-            for (ll j = i; j < N; j+=i)
-                big[j] = i;
     cin >> t;
     while(t--){
         ll k, p, e;
@@ -24,14 +17,21 @@ int main() {
             num *= p_;
         }
         num--;
-        while(num != 1){
-            p = big[num];
-            e = 0;
-            while(big[num] == p){
-                num /= big[num];
-                e++;
+        stack<pair<ll, ll>> factors;
+        for (ll i = 2; i*i <= num; i++){
+            ll d = 0;
+            while (num%i == 0){
+                num/= i;
+                d++;
             }
-            cout << p << " " << e << endl;
+            if (d)
+                factors.push(make_pair(i, d));
+        }
+        if (num > 1)
+            factors.push(make_pair(num, 1));
+        while(!factors.empty()){
+            cout << factors.top().first << " " << factors.top().second << endl;
+            factors.pop();
         }
     }
 }
