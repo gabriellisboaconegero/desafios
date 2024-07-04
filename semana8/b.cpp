@@ -2,50 +2,75 @@
 using namespace std;
 #define ll long long
 
-ll n, m, start_v, end_v;
-ll dfs(ll v, vector<vector<pair<ll, char>>> &g, vector<pair<ll, ll>> &visitados){
-    ll dist = 0;
-    for (auto pu : g[v]){
-        if (visitados[pu].first == 0){
-            dist = dfs(pu.first, g, visitados);
-        }else if(visitados.first ){
-            
-        }
-    }
-    return dist;
-}
-
+struct vert {
+    bool visited;
+    char dir;
+    ll dist;
+    ll parent;
+};
 int main(){
+    ll n, m, start_v, end_v;
     cin >> n >> m;
     vector<vector<pair<ll, char>>> g(n*m);
-    vector<pair<ll, ll>> visitados(n*m, make_pair(0, -1));
+    vector<string> map(n);
+    vector<struct vert> visitados(n*m, (struct vert){
+        .visited=false,
+    });
+    for (auto &s : map)
+        cin >> s;
     for (ll i = 0; i < n; i++){
-        string l;
-        cin >> l;
-        for (ll j = 0; j < int(l.size()); j++){
-            switch(l[j]){
-                case 'A': start_v = i*n + j; break;
-                case 'B': end_v = i*n + j; break;
-                case '#': visitados[i*n + j] = true;
+        for (ll j = 0; j < m; j++){
+            char c = map[i][j];
+            switch(c){
+                case 'A': start_v = i*m + j; break;
+                case 'B': end_v = i*m + j; break;
             }
-            if (i < n-1){
-                g[i*n + j].push_back(make_pair((i+1)*n + j, 'R'));
-                g[(i+1)*n + j].push_back(make_pair(i*n + j, 'L'));
-            } if (j < n-1){
-                g[i*n + j].push_back(make_pair(i*n + j+1, 'D'));
-                g[i*n + j+1].push_back(make_pair(i*n + j, 'U'));
+            if (c == '#')
+                continue;
+            if (i < n-1 && map[i+1][j] != '#'){
+                g[i*m + j].push_back(make_pair((i+1)*m + j, 'U'));
+                g[(i+1)*m + j].push_back(make_pair(i*m + j, 'D'));
+            } if (j < m-1 && map[i][j+1] != '#'){
+                g[i*m + j].push_back(make_pair(i*m + j+1, 'L'));
+                g[i*m + j+1].push_back(make_pair(i*m + j, 'R'));
             }
         }
     }
 
-    dfs(end_v, g, visitados);
-    if (path.size()){
-        cout << "YES" << endl;
-        cout << path.size() << endl;
-        for (auto c : path)
-            cout << c;
-        cout << endl;
-    }else{
+    queue<ll> q;
+    visitados[end_v].visited = true;
+    visitados[end_v].dist = 0;
+    q.push(end_v);
+
+    bool found = false;
+    while(!q.empty() && !found){
+        ll v = q.front(); q.pop();
+        for (auto pw : g[v]){
+            ll w = pw.first;
+            if (!visitados[w].visited){
+                visitados[w].visited = true;
+                visitados[w].dir = pw.second;
+                visitados[w].dist = visitados[v].dist+1;
+                visitados[w].parent = v;
+                q.push(w);
+                if (w == start_v){
+                    found = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!found)
         cout << "NO" << endl;
+    else{
+        cout << "YES" << endl;
+        cout << visitados[start_v].dist << endl;
+        ll w = start_v;
+        while (w != end_v){
+            cout << visitados[w].dir;
+            w = visitados[w].parent;
+        }
+        cout << endl;
     }
 }
