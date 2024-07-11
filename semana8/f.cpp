@@ -4,8 +4,36 @@ using ll = long long;
 ll oo = 1987654321987654321;
 using edge = pair<ll, ll>;
 
-vector<pair<ll, ll>> vizinhanca4(llm i, ll j, vector<vector<edge>> &mapa){
-    
+bool bounded(ll i, ll j, vector<vector<edge>> &mapa){
+    return (i >= 0 &&
+            i < ll(mapa.size()) &&
+            j >= 0 &&
+            j < ll(mapa.front().size()));
+}
+
+vector<edge> vizinhanca4(ll i, ll j, vector<vector<edge>> &mapa){
+    vector<edge> res;
+    if (bounded(i - 1, j, mapa))
+        res.push_back(make_pair(i - 1, j));
+    if (bounded(i + 1, j, mapa))
+        res.push_back(make_pair(i + 1, j));
+    if (bounded(i, j - 1, mapa))
+        res.push_back(make_pair(i, j - 1));
+    if (bounded(i, j + 1, mapa))
+        res.push_back(make_pair(i, j + 1));
+    return res;
+}
+vector<edge> vizinhanca4_diag(ll i, ll j, vector<vector<edge>> &mapa){
+    vector<edge> res;
+    if (bounded(i - 1, j - 1, mapa))
+        res.push_back(make_pair(i - 1, j - 1));
+    if (bounded(i - 1, j + 1, mapa))
+        res.push_back(make_pair(i - 1, j + 1));
+    if (bounded(i + 1, j - 1, mapa))
+        res.push_back(make_pair(i + 1, j - 1));
+    if (bounded(i + 1, j + 1, mapa))
+        res.push_back(make_pair(i + 1, j + 1));
+    return res;
 }
 
 int main(){
@@ -23,9 +51,11 @@ int main(){
         }
     }
 
-    ll zeros_cont = ll(zeros.size());
+    ll zeros_cont = 0;
     while(!zeros.empty()){
         auto [i, j] = zeros.front(); zeros.pop();
+        if (mapa[i][j].second <= t)
+            zeros_cont++;
         for (auto [vi, vj] : vizinhanca4(i, j, mapa)){
             ll val = mapa[vi][vj].first;
             if (val == 5 || val == 0)
@@ -33,8 +63,6 @@ int main(){
             if (val <= 2){
                 mapa[vi][vj].first = 0;
                 mapa[vi][vj].second = mapa[i][j].second+1;
-                if (mapa[vi][vj].second <= t)
-                    zeros_cont++;
                 zeros.push(make_pair(vi, vj));
             }else
                 mapa[vi][vj].first--;
