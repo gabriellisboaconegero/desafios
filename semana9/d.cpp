@@ -10,6 +10,9 @@ int main(){
     map<string, ll> name_id_map;
     map<ll, string> id_name_map;
     vector<vector<ll>> d(n, vector<ll>(n, oo));
+    vector<vector<ll>> g(n);
+    vector<ll> pai(n, -1);
+    vector<bool> visitados(n, false);
     ll cont = 0;
     while(m--){
         string u, v;
@@ -24,6 +27,7 @@ int main(){
             id_name_map.insert(make_pair(cont, v));
             cont++;
         }
+        g[it1->second].push_back(it2->second);
         d[it1->second][it2->second] = 1;
     }
 
@@ -33,17 +37,6 @@ int main(){
     for (ll u = 0; u < n; u++)
     for (ll v = 0; v < n; v++)
         d[u][v] = min(d[u][v], d[u][m] + d[m][v]);
-
-
-    for (ll u = 0; u < n; u++)
-        cout << id_name_map[u] << " ";
-    cout << endl;
-    for (ll u = 0; u < n; u++){
-        cout << setw(10) << id_name_map[u] << ": ";
-        for (ll v = 0; v < n; v++)
-            cout << d[u][v] << " ";
-        cout << endl;
-    }
 
     double sum = 0.0;
     ll num_min_paths = 0;
@@ -57,6 +50,32 @@ int main(){
             }
     sort(dists.begin(), dists.end());
     ll med_path = num_min_paths/2 + num_min_paths%2 - 1;
+    auto [src_str, dst_str] = dists[med_path].second;
+    ll src = name_id_map[src_str];
+    ll dst = name_id_map[dst_str];
+
+    queue<ll> q;
+    q.push(src);
+    while (!q.empty()){
+        ll u = q.front(); q.pop();
+        for (auto v : g[u]){
+            if (visitados[v]) continue;
+            visitados[v] = true;
+            pai[v] = u;
+            if (u == dst) break;
+            q.push(v);
+        }
+    }
+    vector<string> sol;
+    ll u = dst;
+    while(u != src){
+        sol.push_back(id_name_map[u]);
+        u = pai[u];
+    }
+    sol.push_back(id_name_map[u]);
 
     cout << (sum/double(num_min_paths)) << endl;
+    for (auto it = sol.rbegin(); it != sol.rend(); it++)
+        cout << *it << " ";
+    cout << endl;
 }
