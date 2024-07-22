@@ -1,9 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
-const ll oo = 1987654321987654321;
-#define OP(x, y) ((x) + (y))
-const ll NEUTRAL = 0;
+#define OP(x, y) ((x) * (y))
+#define sign_or_zero(v) ((v) == 0 ? 0 : ((v) < 0 ? -1 : 1))
+const ll NEUTRAL = 1;
 const ll N = 1e5+15;
 
 vector<ll> t(4*N);
@@ -20,14 +20,14 @@ void build(vector<ll> &src, ll ti=1, ll tl=1, ll tr=N){
 }
 
 ll op_inclusive(ll l, ll r, ll ti=1, ll tl=1, ll tr=N){
-    if (tl > tr)
+    if (l > r)
         return NEUTRAL;
     if (tl == l && tr == r)
         return t[ti];
     ll tm = (tl + tr)/2;
     return OP(
             op_inclusive(l, min(r, tm), ti*2, tl, tm),
-            op_inclusive(max(l, tm), r, ti*2+1, tm+1, tr));
+            op_inclusive(max(l, tm+1), r, ti*2+1, tm+1, tr));
 }
 
 void set_value(ll i, ll val, ll ti=1, ll tl=1, ll tr=N){
@@ -46,8 +46,12 @@ void set_value(ll i, ll val, ll ti=1, ll tl=1, ll tr=N){
 int main(){
     ll n, k, i, j;
     cin >> n >> k;
-    vector<ll> v(n);
-    for (auto &i : v) cin >> i;
+    vector<ll> v(n+1);
+    for (ll w = 0; w < n; w++){
+        ll val;
+        cin >> val;
+        v[w+1] = sign_or_zero(val);
+    }
     
     build(v);
     char op;
@@ -55,7 +59,7 @@ int main(){
         cin >> op >> i >> j;;
         switch(op){
             case 'A':
-                set_value(i, j);
+                set_value(i, sign_or_zero(j));
                 break;
             case 'B':
                 ll s = op_inclusive(i, j);
